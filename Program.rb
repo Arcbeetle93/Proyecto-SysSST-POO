@@ -61,7 +61,7 @@ class EvaluacionMedica
     end
 
     def calcularIMC
-        peso / (altura * altura)
+        peso / (talla * talla)
     end
 end
 
@@ -316,18 +316,22 @@ class Model
     end
 
     def obtenerConvenioPreferido
-        convenioPreferido = nil;
+        convenioPreferido = nil
         mayorVeces = 0
 
         for convenio in listaConvenios
             vecesConvenio = 0
 
             for colaborador in listaColaboradores
+                
                 for convenioCol in colaborador.convenios
-                    if convenio.codigo = convenioCol.codigo
+
+                    if convenio.codigo == convenioCol.codigo
                         vecesConvenio += 1
                     end
+
                 end
+
             end
 
             if vecesConvenio > mayorVeces
@@ -458,11 +462,33 @@ view = View.new
 model = Model.instance
 controller = Controller.new(view, model)
 
+puts "PRUEBAS"
+
+controller.registrar("c", "71927800", "José", 1, 20, 3000,1)
+controller.registrar("c", "15849901", "Juan", 2, 30, 6000,1)
+
+controller.registrar("em", "71927800", 70, 1.70, 1, 0, 1, 0)
+controller.registrar("em", "15849901", 80, 2, 1.60, 0, 1, 0, 0)
+
+colaborador = controller.obtenerColaborador("71927800")
+evaluacion = controller.obtenerEvaluacion("71927800")
+colaborador.evaluacionMedica = evaluacion
+
+colaborador2 = controller.obtenerColaborador("15849901")
+evaluacion2 = controller.obtenerEvaluacion("15849901")
+colaborador2.evaluacionMedica = evaluacion2
+
 controller.registrar("cg", "00001", "Plan Distrito", 1, 200, 3,1)
 controller.registrar("cg", "00002", "Plan Oficina", 2, 200, 6,2)
 controller.registrar("ca", "00003", "Plan Desayuno", 1, 100, 6, 1, 0, 0)
 controller.registrar("ca", "00004", "Plan 2 comidas", 2, 100, 6, 1, 1, 0)
 controller.registrar("ca", "00005", "Plan 3 comidas", 3, 100, 6, 1, 1, 1)
+
+gimnasio = controller.obtenerConvenio("00002")
+alimentacion = controller.obtenerConvenio("00005")
+colaborador.convenios.push(alimentacion)
+colaborador.convenios.push(gimnasio)
+colaborador2.convenios.push(gimnasio)
 
 valorSeleccionado = 0
 
@@ -514,14 +540,14 @@ while(valorSeleccionado != 9)
             print "Ingrese su talla(m): "
             talla = gets.chomp.to_f
             puts "----------------------------------------------"
-            print "¿Presenta diabetes? y/n "
-            diabetes = gets.chomp.to_i
-            print "¿Presenta enfermedades cardiovasculares? y/n "
-            cardiovasculares = gets.chomp.to_i
-            print "¿Presenta enfermedades respiratorias? y/n "
-            respiratorias = gets.chomp.to_i
-            print "¿Sufre de inmunodeficiencia? y/n "
-            inmunodeficiencia = gets.chomp.to_i
+            print "¿Presenta diabetes? y/n: "
+            diabetes = gets.chomp
+            print "¿Presenta enfermedades cardiovasculares? y/n: "
+            cardiovasculares = gets.chomp
+            print "¿Presenta enfermedades respiratorias? y/n: "
+            respiratorias = gets.chomp
+            print "¿Sufre de inmunodeficiencia? y/n: "
+            inmunodeficiencia = gets.chomp
 
             if diabetes == "y"
                 diabetes = 1
@@ -568,7 +594,7 @@ while(valorSeleccionado != 9)
                     when 1
                         controller.listarConvenios(1)
                         print "Ingrese un convenio Gimnasio: "
-                        sel1 = gets.chomp.to_i
+                        sel1 = gets.chomp
                         gimnasio = controller.obtenerConvenio(sel1)
                         colaborador.convenios.push(gimnasio)
                         puts "Convenio afiliado"
@@ -576,7 +602,7 @@ while(valorSeleccionado != 9)
                     when 2
                         controller.listarConvenios(2)
                         print "Ingrese un convenio Alimentación: "
-                        sel2 = gets.chomp.to_i
+                        sel2 = gets.chomp
                         alimentacion = controller.obtenerConvenio(sel2)
                         colaborador.convenios.push(alimentacion)
                         puts "Convenio afiliado"
